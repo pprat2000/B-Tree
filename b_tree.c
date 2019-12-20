@@ -8,6 +8,41 @@ static inline bool is_node_leaf(bt_node *node) {
 	return node->child[0] ? false : true;
 }
 
+int height(bt_node *node)
+{
+	if (node == NULL)
+		return 0;
+	else
+		return height(node->child[0]) + 1;
+}
+
+static void __display_tree(bt_node *node, int h)
+{
+	int i;
+
+	if (node == NULL)
+		return;
+	if (h == 1) {
+		for (i = 0; i < node->cnt; i++)
+			DBG_PRINT("%d  ", node->key[i]);
+	} else {
+		for (i = 0; i < node->cnt + 1; i++)
+			__display_tree(node->child[i],h-1);
+	}
+	return;
+}
+
+void display_tree(bt_node *node)
+{
+	int i, h;
+	h = height(node);
+	for (i = 0; i < h; i++) {
+		__display_tree(node, i+1);
+		DBG_PRINT("\n*******************************\n");
+	}
+	return;
+}
+
 bt_node *init_new_node(int val)
 {
 	bt_node *node = NULL;
@@ -129,11 +164,12 @@ int main()
 	int i;
 	bt_node *b_tree = NULL;
 
-	for(i = 10; i <= 200; i += 10) {
+	for(i = 10; i <= 500; i += 10) {
 		insert_to_tree(i, &b_tree);
 		while (b_tree->pptr) { // Go to root
 			b_tree = b_tree->pptr;
 		}
 	}
+	display_tree(b_tree);
 	return 0;
 }
