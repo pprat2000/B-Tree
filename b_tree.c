@@ -8,6 +8,18 @@ static inline bool is_node_leaf(bt_node *node) {
 	return node->child[0] ? false : true;
 }
 
+bt_node *init_new_node(int val)
+{
+	bt_node *node = NULL;
+	node = malloc(sizeof(bt_node));
+	if (node) {
+		memset(node, 0, sizeof(bt_node));
+		node->cnt = 1;
+		node->key[0] = val;
+	}
+	return node;
+}
+
 void insert_to_child(int val, bt_node *node)
 {
 	int i;
@@ -65,11 +77,10 @@ void split_and_insert(int val, bt_node *node)
 	} else {
 		insert_to_node_sorted(mid, node->pptr);
 	}
-	sibling_node = NULL;
+	sibling_node = init_new_node(val);
 	for (i = deg; i < node->cnt; i++) {
-		insert_to_tree(node->key[i], &sibling_node);
+		insert_to_node_sorted(node->key[i], sibling_node);
 	}
-	insert_to_tree(val, &sibling_node);
 	if (!is_node_leaf(node)) { // Take care of children of node
 		for (i = deg; i <= node->cnt; i++) { // <= because 1 more child than key
 			sibling_node->child[i-deg] = node->child[i];
@@ -95,18 +106,11 @@ void insert_to_tree(int val, bt_node **node)
 	DBG_PRINT("Inserting Value: %d\n", val);
 
 	if (*node == NULL) { // Empty Tree
-		*node = malloc(sizeof(bt_node));
-		curr = *node;
-		curr->cnt = 1;
-		curr->key[0] = val;
-		curr->pptr = NULL;
-		for (i = 0; i < 2*deg; i++) {
-			curr->child[i] = NULL;
-		}
+		*node = init_new_node(val);
 	} else { // Non Empty Tree
 		curr = *node;
 		if (is_node_leaf(curr)) {
-			if (is_node_full(*node)) {
+			if (is_node_full(curr)) {
 				DBG_PRINT("Node is Full.\n");
 				split_and_insert(val, curr);
 			} else {

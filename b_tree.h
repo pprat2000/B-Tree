@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 // Just Debug Things
 #define DEBUG	0x1
@@ -15,7 +16,7 @@
 #endif
 
 
-#define deg     0x2
+#define deg     0x3
 // B Tree Node struct parameterized
 // by the above #define
 struct b_tree_node {
