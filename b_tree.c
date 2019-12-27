@@ -98,7 +98,7 @@ void insert_to_node_sorted(int val, bt_node *node)
 
 void split_and_insert(int val, bt_node *node)
 {
-	int i, mid;
+	int i, mid, new_cnt;
 	bt_node *sibling_node, *parent;
 	mid = node->key[deg-1];
 	DBG_PRINT("Splitting with mid = %d\n", mid);
@@ -112,8 +112,18 @@ void split_and_insert(int val, bt_node *node)
 	} else {
 		insert_to_node_sorted(mid, node->pptr);
 	}
-	sibling_node = init_new_node(val);
-	for (i = deg; i < node->cnt; i++) {
+
+	if (val <= mid) { // Put val in old node, cnt becomes deg and init sibling
+		i = deg + 1;
+		new_cnt = deg;
+		node->key[deg-1] = val;
+		sibling_node = init_new_node(node->key[deg]);
+	} else { // Put val in sibling, cnt becomes deg - 1
+		i = deg;
+		new_cnt = deg-1;
+		sibling_node = init_new_node(val);
+	}
+	for (; i < node->cnt; i++) {
 		insert_to_node_sorted(node->key[i], sibling_node);
 	}
 	if (!is_node_leaf(node)) { // Take care of children of node
@@ -123,14 +133,15 @@ void split_and_insert(int val, bt_node *node)
 			sibling_node->child[i-deg]->pptr = sibling_node;
 		}
 	}
-	node->cnt = deg-1;
+	node->cnt = new_cnt;
 	parent = node->pptr;
 	sibling_node->pptr = parent;
-	for (i = 0; i <= parent->cnt; i++) {
-		if (parent->child[i] == NULL)
+	for (i = parent->cnt-1; i >= 0; i--) { // Shift child ptr to the right & insert sib next to node
+		if (parent->child[i] == node)
 			break;
+		parent->child[i+1] = parent->child[i];
 	}
-	parent->child[i] = sibling_node;
+	parent->child[i+1] = sibling_node;
 	return;
 }
 
