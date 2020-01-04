@@ -29,4 +29,5 @@ typedef struct b_tree_node bt_node;
 
 void insert_to_tree(int val, bt_node **node);
 void split_and_insert(int val, bt_node *node);
+void delete_from_tree(int val, bt_node **node);
 #endif // __B_TREE__
