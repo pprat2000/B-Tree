@@ -93,6 +93,42 @@ bt_node *init_new_node(int val)
 	return node;
 }
 
+/*
+ * This function searches for the tree
+ * for a value and returns true/false
+ * depending on the result.
+ */
+bool search_in_tree(int val, bt_node *node)
+{
+	int i;
+	bool found;
+
+	if (node == NULL) {
+		DBG_PRINT("Trying to search in an empty node! ERROR!\n");
+		exit(1);
+	}
+
+	for (i = 0; i < node->cnt; i++) { // Finding the idx
+		if (val <= node->key[i])
+			break;
+	}
+
+	if (i < node->cnt && node->key[i] == val) { // If val in this node
+		DBG_PRINT("Value Found in Node with 0th idx value %d\n", node->key[0]);
+		found = true;
+	} else { // If val not in this node
+		if (is_node_leaf(node)) {
+			DBG_PRINT("%d not in the Tree!\n", val);
+			found = false;
+		} else {
+			DBG_PRINT("Value not found in node! Traversing child [%d]!\n", i);
+			found = search_in_tree(val, node->child[i]);
+		}
+	}
+
+	return found;
+}
+
 /* 
  * This function is to be called only
  * when it is a leaf node and there node
@@ -444,7 +480,16 @@ int main()
 	for (i = 20; i < 400; i+=10) {
 		delete_from_tree(i, &b_tree);
 	}
-	
+
 	display_tree(b_tree);
+
+	printf("Enter a Value to Search: ");
+	scanf("%d", &i);
+
+	if (search_in_tree(i, b_tree))
+		DBG_PRINT("Found value %d in tree!\n", i);
+	else
+		DBG_PRINT("Value %d not found!\n", i);
+
 	return 0;
 }
