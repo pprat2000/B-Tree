@@ -23,9 +23,9 @@ int main()
 	scanf("%d", &i);
 
 	if (search_in_tree(i, b_tree))
-		DBG_PRINT("Found value %d in tree!\n", i);
+		printf("Found value %d in tree!\n", i);
 	else
-		DBG_PRINT("Value %d not found!\n", i);
+		printf("Value %d not found!\n", i);
 
 	return 0;
 }
