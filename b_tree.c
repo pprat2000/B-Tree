@@ -1,22 +1,5 @@
 #include "b_tree.h"
-
-static inline bool is_node_half(bt_node *node) {
-	if (node == NULL)
-		return true;
-	return (node->cnt <= deg - 1) ? true : false;
-}
-
-static inline bool is_node_root(bt_node *node) {
-	return (node->pptr) ? false : true;
-}
-
-static inline bool is_node_full(bt_node *node) {
-	return (node->cnt == 2*deg - 1) ? true : false; 
-}
-
-static inline bool is_node_leaf(bt_node *node) {
-	return node->child[0] ? false : true;
-}
+#include "b_tree_utils.h"
 
 int max_of_tree(bt_node *node)
 {
@@ -240,7 +223,6 @@ void balance_with_right(bt_node *node, bt_node *child, bt_node *sibling, int idx
 
 void delete_from_internal_node(int val, bt_node *node, int idx)
 {
-	int i;
 	bt_node *left_child, *right_child;
 	
 	left_child = node->child[idx];
@@ -269,7 +251,6 @@ void delete_from_internal_node(int val, bt_node *node, int idx)
  */
 void delete_from_child(int val, bt_node *node, int idx)
 {
-	int i;
 	bt_node *child, *sibling_node_left, *sibling_node_right;
 
 	child = node->child[idx];
@@ -441,7 +422,6 @@ void split_and_insert(int val, bt_node *node)
 
 void insert_to_tree(int val, bt_node **node)
 {
-	int i;
 	bt_node *curr = NULL;
 	DBG_PRINT("Inserting Value: %d\n", val);
 
@@ -462,34 +442,4 @@ void insert_to_tree(int val, bt_node **node)
 		}
 	}
 	return;
-}
-
-int main()
-{
-	int i;
-	bt_node *b_tree = NULL;
-
-	for(i = 10; i <= 500; i += 10) {
-		insert_to_tree(i, &b_tree);
-		while (b_tree->pptr) { // Go to root
-			b_tree = b_tree->pptr;
-		}
-	}
-	display_tree(b_tree);
-
-	for (i = 20; i < 400; i+=10) {
-		delete_from_tree(i, &b_tree);
-	}
-
-	display_tree(b_tree);
-
-	printf("Enter a Value to Search: ");
-	scanf("%d", &i);
-
-	if (search_in_tree(i, b_tree))
-		DBG_PRINT("Found value %d in tree!\n", i);
-	else
-		DBG_PRINT("Value %d not found!\n", i);
-
-	return 0;
 }
