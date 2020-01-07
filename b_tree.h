@@ -28,7 +28,7 @@ struct b_tree_node {
 typedef struct b_tree_node bt_node;
 
 void insert_to_tree(int val, bt_node **node);
-void delete_from_tree(int val, bt_node **node);
+bool delete_from_tree(int val, bt_node **node);
 bool search_in_tree(int val, bt_node *node);
 void display_tree(bt_node *node);
 #endif // __B_TREE__

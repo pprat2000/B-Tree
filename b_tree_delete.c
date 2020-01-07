@@ -7,7 +7,7 @@
  * is not underflowing. Undefined behavior
  * otherwise!
  */
-static void delete_from_leaf(int val, bt_node *node, int idx)
+static bool delete_from_leaf(int val, bt_node *node, int idx)
 {
 	int i;
 
@@ -22,7 +22,7 @@ static void delete_from_leaf(int val, bt_node *node, int idx)
 	}
 	node->cnt--;
 	DBG_PRINT("Deleted from index [%d]\n", idx);
-	return;
+	return true;
 }
 
 /*
@@ -110,8 +110,9 @@ static void balance_with_right(bt_node *node, bt_node *child, bt_node *sibling, 
 	return;
 }
 
-static void delete_from_internal_node(int val, bt_node *node, int idx)
+static bool delete_from_internal_node(int val, bt_node *node, int idx)
 {
+	bool ret_val;
 	bt_node *left_child, *right_child;
 	
 	left_child = node->child[idx];
@@ -120,26 +121,27 @@ static void delete_from_internal_node(int val, bt_node *node, int idx)
 	if (!is_node_half(left_child)) {
 		node->key[idx] = max_of_tree(left_child);
 		DBG_PRINT("Deleted from index [%d]. Replaced with %d\n", idx, node->key[idx]);
-		delete_from_tree(node->key[idx], &left_child);
+		ret_val = delete_from_tree(node->key[idx], &left_child);
 	} else if (!is_node_half(right_child)) {
 		node->key[idx] = min_of_tree(right_child);
 		DBG_PRINT("Deleted from index [%d]. Replaced with %d\n", idx, node->key[idx]);
-		delete_from_tree(node->key[idx], &right_child);
+		ret_val = delete_from_tree(node->key[idx], &right_child);
 	} else { // We need to merge
 		merge_siblings(node, left_child, right_child, idx);
 		DBG_PRINT("Calling delete on the merged child\n");
-		delete_from_tree(val, &left_child);
+		ret_val = delete_from_tree(val, &left_child);
 	}
 
-	return;
+	return ret_val;
 }
 
 /* 
  * This function is to be called with idx of the child ptr
  * array of the node param where the value may reside
  */
-static void delete_from_child(int val, bt_node *node, int idx)
+static bool delete_from_child(int val, bt_node *node, int idx)
 {
+	bool ret_val;
 	bt_node *child, *sibling_node_left, *sibling_node_right;
 
 	child = node->child[idx];
@@ -170,13 +172,14 @@ static void delete_from_child(int val, bt_node *node, int idx)
 	}
 
 	// Child node is not underflow anymore
-	delete_from_tree(val, &child);
-	return;
+	ret_val = delete_from_tree(val, &child);
+	return ret_val;
 }
 
-void delete_from_tree(int val, bt_node **node)
+bool delete_from_tree(int val, bt_node **node)
 {
 	int i;
+	bool ret_val;
 	bt_node *curr = *node;
 	DBG_PRINT("Deleting Value: %d\n", val);
 
@@ -193,17 +196,18 @@ void delete_from_tree(int val, bt_node **node)
 	if (i < curr->cnt && curr->key[i] == val) { // If val in this node
 		if (is_node_leaf(curr)) {
 			DBG_PRINT("Value in leaf!\n");
-			delete_from_leaf(val, curr, i);
+			ret_val = delete_from_leaf(val, curr, i);
 		} else {
 			DBG_PRINT("Value in internal node!\n");
-			delete_from_internal_node(val, curr, i);
+			ret_val = delete_from_internal_node(val, curr, i);
 		}
 	} else { // If val not in this node
 		if (is_node_leaf(curr)) {
 			DBG_PRINT("%d not in the Tree! Ignoring delete command!\n", val);
+			ret_val = false;
 		} else {
 			DBG_PRINT("Value not in curr node! Traversing child [%d]!\n", i);
-			delete_from_child(val, curr, i);
+			ret_val = delete_from_child(val, curr, i);
 		}
 	}
 
@@ -215,5 +219,5 @@ void delete_from_tree(int val, bt_node **node)
 		free(curr);
 		curr = *node;
 	}
-	return;
+	return ret_val;
 }

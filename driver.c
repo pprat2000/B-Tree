@@ -38,7 +38,10 @@ int main()
 			case 3:
 				printf("Enter the value : ");
 				scanf("%d", &val);
-				delete_from_tree(val, &b_tree);
+				if (delete_from_tree(val, &b_tree))
+					printf("%d deleted from tree!\n", val);
+				else
+					printf("%d not in tree!\n,", val);
 				break;
 			case 4:
 				display_tree(b_tree);
