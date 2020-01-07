@@ -13,6 +13,8 @@ static bt_node *init_new_node(int val)
 	return node;
 }
 
+static void __insert_to_tree(int val, bt_node **node);
+
 static void insert_to_child(int val, bt_node *node)
 {
 	int i;
@@ -22,7 +24,7 @@ static void insert_to_child(int val, bt_node *node)
 		}
 	}
 	DBG_PRINT("Inserting in child [%d]\n", i);
-	insert_to_tree(val, &node->child[i]);
+	__insert_to_tree(val, &node->child[i]);
 	if (node->child[i])
 		node->child[i]->pptr = node;
 	return;
@@ -63,7 +65,7 @@ static void split_and_insert(int val, bt_node *node)
 	DBG_PRINT("Splitting with mid = %d\n", mid);
 	
 	if (node->pptr == NULL) {
-		insert_to_tree(mid, &node->pptr);
+		__insert_to_tree(mid, &node->pptr);
 		node->pptr->child[0] = node;
 	}
 	else if (is_node_full(node->pptr)) {
@@ -104,7 +106,7 @@ static void split_and_insert(int val, bt_node *node)
 	return;
 }
 
-void insert_to_tree(int val, bt_node **node)
+static void __insert_to_tree(int val, bt_node **node)
 {
 	bt_node *curr = NULL;
 	DBG_PRINT("Inserting Value: %d\n", val);
@@ -124,6 +126,16 @@ void insert_to_tree(int val, bt_node **node)
 		} else { // If non-leaf, traverse and add
 			insert_to_child(val, curr);
 		}
+	}
+	return;
+}
+
+void insert_to_tree(int val, bt_node **node)
+{
+	__insert_to_tree(val, node);
+
+	while((*node)->pptr) { // Go to root
+		(*node) = (*node)->pptr;
 	}
 	return;
 }

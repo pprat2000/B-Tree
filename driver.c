@@ -1,31 +1,56 @@
 #include "b_tree.h"
 
+void print_menu()
+{
+	printf("1. Insert to Tree\n");
+	printf("2. Search in Tree\n");
+	printf("3. Delete from Tree\n");
+	printf("4. Display the Tree\n");
+	printf("-1 to Exit\n");
+	printf("Enter your choice: ");
+}
+
 int main()
 {
-	int i;
+	int i, val;
 	bt_node *b_tree = NULL;
 
-	for(i = 10; i <= 500; i += 10) {
-		insert_to_tree(i, &b_tree);
-		while (b_tree->pptr) { // Go to root
-			b_tree = b_tree->pptr;
+	while (i != -1) {
+
+		print_menu();
+		scanf("%d", &i);
+
+		switch (i)
+		{
+			case 1:
+				printf("Enter the value : ");
+				scanf("%d", &val);
+				insert_to_tree(val, &b_tree);
+				break;
+			case 2:
+				printf("Enter the value : ");
+				scanf("%d", &val);
+				if (search_in_tree(val, b_tree))
+					printf("Found value %d in tree!\n", val);
+				else
+					printf("Value %d not found!\n", val);
+				break;
+			case 3:
+				printf("Enter the value : ");
+				scanf("%d", &val);
+				delete_from_tree(val, &b_tree);
+				break;
+			case 4:
+				display_tree(b_tree);
+				break;
+			case -1:
+				printf("Exiting...\n");
+				break;
+			default:
+				printf("Not a valid choice!\n");
+				break;
 		}
-	}
-	display_tree(b_tree);
-
-	for (i = 20; i < 400; i+=10) {
-		delete_from_tree(i, &b_tree);
-	}
-
-	display_tree(b_tree);
-
-	printf("Enter a Value to Search: ");
-	scanf("%d", &i);
-
-	if (search_in_tree(i, b_tree))
-		printf("Found value %d in tree!\n", i);
-	else
-		printf("Value %d not found!\n", i);
+	};
 
 	return 0;
 }
